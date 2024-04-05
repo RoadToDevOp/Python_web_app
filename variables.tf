@@ -13,3 +13,7 @@ variable "web_vm_name" {
 variable "app_vm_name" {
     default = "default_app_vm_name"
 }
+
+variable name {
+  default     = "B1s"
+}
