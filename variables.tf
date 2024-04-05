@@ -17,3 +17,7 @@ variable "app_vm_name" {
 variable name {
   default     = "B1s"
 }
+
+variable CIDR {
+    default = ["192.168.0.1/24"]
+}
