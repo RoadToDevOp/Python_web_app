@@ -14,7 +14,7 @@ variable "app_vm_name" {
     default = "default_app_vm_name"
 }
 
-variable name {
+variable vm_name {
   default     = "B1s"
 }
 
