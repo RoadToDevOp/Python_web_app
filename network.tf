@@ -23,7 +23,7 @@ resource "azurerm_network_security_group" "NSG" {
         destination_address_prefix = "*"
 
     }
-     security_rule {
+    security_rule {
         name                       = "allow-https"
         priority                   = 101
         direction                  = "Inbound"
