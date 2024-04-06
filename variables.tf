@@ -19,5 +19,5 @@ variable "vm_name" {
 }
 
 variable "CIDR" {
-  default = ["192.168.0.1/24"]
+  default = ["192.168.0.0/24"]
 }

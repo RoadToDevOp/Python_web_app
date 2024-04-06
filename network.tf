@@ -12,7 +12,7 @@ resource "azurerm_network_security_group" "NSG" {
     
 
     security_rule {
-        name = "allow http"
+        name = "allow-http"
         priority = 100
         direction = "Inbound"
         access = "Allow"
