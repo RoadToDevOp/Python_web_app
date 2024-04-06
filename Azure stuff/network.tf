@@ -95,7 +95,13 @@ resource "azurerm_lb_backend_address_pool" "backendpool" {
 
   
 }
-
+resource "azurerm_lb_probe" "lb_probe" {
+    name = "probe"
+    loadbalancer_id = azurerm_lb.Primary_lb.id
+    port = "80"
+    request_path =  "/"
+  
+}
 resource "azurerm_lb_rule" "lbule" {
     name = "http"
     loadbalancer_id = azurerm_lb.Primary_lb.id
