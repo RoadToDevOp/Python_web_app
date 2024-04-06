@@ -96,7 +96,20 @@ resource "azurerm_lb_rule" "lbule" {
     backend_port = 80
     frontend_ip_configuration_name = "Web_IP"
     backend_address_pool_ids = [azurerm_lb_backend_address_pool.backendpool.id]
+}
+
+resource "azurerm_firewall" "basic_firewall" {
+    name = "basic_firewall"
+    location = azurerm_resource_group.rg.location
+    resource_group_name = azurerm_resource_group.rg.name
+    sku_tier = "Basic"
+    sku_name = "AZFW_VNet"
+
+    ip_configuration {
+      name = "fwconfig"
+      subnet_id = azurerm_subnet.subnet.id
+      public_ip_address_id = azurerm_public_ip.pubip.id
 
 
-  
+    }
 }
