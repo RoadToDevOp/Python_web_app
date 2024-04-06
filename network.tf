@@ -130,12 +130,12 @@ resource "azurerm_public_ip" "natgip" {
     resource_group_name = azurerm_resource_group.rg.name
     allocation_method = "Static"
     sku = "Standard"
-    
+
 }
 
 resource "azurerm_nat_gateway_public_ip_association" "nat_pip_link" {
-    public_ip_address_id = azurerm_public_ip.pubip.id
-    nat_gateway_id = azurerm_nat_gateway.natgip.id
+    public_ip_address_id = azurerm_public_ip.natgip.id
+    nat_gateway_id = azurerm_nat_gateway.natg.id
   
 }
 resource "azurerm_subnet_nat_gateway_association" "subnet_nat_link" {
