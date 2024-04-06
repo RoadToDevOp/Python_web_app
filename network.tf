@@ -41,7 +41,7 @@ resource "azurerm_network_security_group" "NSG" {
         protocol                   = "Tcp"
         source_port_range          = "*"
         destination_port_range     = "22"
-        source_address_prefix      = var.CIDR
+        source_address_prefix      = "*"
         destination_address_prefix = "*"
   }
 }
@@ -58,20 +58,42 @@ resource "azurerm_subnet_network_security_group_association" "name" {
     subnet_id = azurerm_subnet.subnet.id
 }
 
-resource "azurerm_public_ip" "lbIP" {
-    name = "public_load_balancer_ip"
+resource "azurerm_public_ip" "pubip" {
+    name = "Pubip"
     location = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
     allocation_method = "Static"
     sku = "Basic"
     domain_name_label = "EoghanTestWebApp"
     sku_tier = "Regional"
-    zones = ["1","2"]
+
 }
 
 resource "azurerm_lb" "Primary_lb" {
     name = "primary_lb"
     location = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
+    sku = "Standard"
+    frontend_ip_configuration {
+      name = "Web_Ip"
+      public_ip_address_id = azurerm_public_ip.pubip.id
+    }
 
+}
+resource "azurerm_lb_backend_address_pool" "backendpool" {
+    name = "backendpool"
+    loadbalancer_id = azurerm_lb.Primary_lb.id
+
+  
+}
+
+resource "azurerm_lb_rule" "lbule" {
+    name = "http"
+    loadbalancer_id = azurerm_lb.Primary_lb.id
+    protocol = "Tcp"
+    frontend_port = 80
+    backend_port = 80
+    frontend_ip_configuration_name = azurerm_lb.Primary_lb.frontend_ip_configuration.name
+    
+  
 }

@@ -7,3 +7,13 @@ This project will likely result in me developing my knowledge in Azure networkin
 As I put more and more time into this I will start to implement more principles such as DLP, Availability, security aswell as revamping my architecture to work more around a hub-spoke architecture.
 
 Thank you for reading.
+
+
+To do list currently: 
+
+Python Web app 
+Web hosting VM setup 
+App hosting VM setup
+Load balancer for both Web + App + DB 
+DNS zone + record 
+Remote access
