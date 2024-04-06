@@ -13,7 +13,7 @@ resource "azurerm_network_security_group" "NSG" {
 
 resource "azurerm_network_security_rule" "allowhttp" {
         name                       = "allow-http"
-        resource_group_name = azurerm_network_security_group.NSG.location
+        resource_group_name = azurerm_network_security_group.NSG.resource_group_name
         network_security_group_name = azurerm_network_security_group.NSG.name
         priority                   = 100
         direction                  = "Inbound"
@@ -27,7 +27,7 @@ resource "azurerm_network_security_rule" "allowhttp" {
 }
 resource "azurerm_network_security_rule" "allowhttps" {
         name                       = "allow-https"
-        resource_group_name = azurerm_network_security_group.NSG.location
+        resource_group_name = azurerm_network_security_group.NSG.resource_group_name
         network_security_group_name = azurerm_network_security_group.NSG.name
         priority                   = 101
         direction                  = "Inbound"
@@ -42,7 +42,7 @@ resource "azurerm_network_security_rule" "allowhttps" {
 
 resource "azurerm_network_security_rule" "name" {
         name                       = "allow-ssh"
-        resource_group_name = azurerm_network_security_group.NSG.location
+        resource_group_name = azurerm_network_security_group.NSG.resource_group_name
         network_security_group_name = azurerm_network_security_group.NSG.name
         priority                   = 102
         direction                  = "Inbound"
