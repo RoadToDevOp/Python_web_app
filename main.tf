@@ -1,23 +1,23 @@
 terraform {
-    required_providers {
-        azurerm ={
-            source = "Hashicorp/azurerm"
-            version = "~>3.0"
-        }
-        random = {
-            source = "Hashicorp/random"
-            version = "~>3.0"
-        }
+  required_providers {
+    azurerm = {
+      source  = "Hashicorp/azurerm"
+      version = "~>3.0"
     }
+    random = {
+      source  = "Hashicorp/random"
+      version = "~>3.0"
+    }
+  }
 }
 
 provider "azurerm" {
-    features {}
+  features {}
 }
 
 resource "azurerm_resource_group" "rg" {
-    name = var.resource_group_name
-    location = var.resource_group_location
+  name     = var.resource_group_name
+  location = var.resource_group_location
 }
 
 
@@ -30,7 +30,7 @@ resource "azurerm_resource_group" "rg" {
 #     storage_os_disk {
 #       name =
 #       create_option =
-      
+
 #     }
 # }
 
