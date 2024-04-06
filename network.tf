@@ -11,20 +11,60 @@ resource "azurerm_network_security_group" "NSG" {
     resource_group_name = azurerm_resource_group.rg.name
     
 
-    security_rule {
-        name = "allow-http"
-        priority = 100
-        direction = "Inbound"
-        access = "Allow"
-        protocol = "Tcp"
-        source_port_range = "*"
-        destination_port_range = "80"
-        source_address_prefix = "*"
-        destination_address_prefix = "*"
+#     security_rule {
+#         name = "allow-http"
+#         priority = 100
+#         direction = "Inbound"
+#         access = "Allow"
+#         protocol = "Tcp"
+#         source_port_range = "*"
+#         destination_port_range = "80"
+#         source_address_prefix = "*"
+#         destination_address_prefix = "*"
 
-    }
-    security_rule {
+#     }
+#     security_rule {
+#         name                       = "allow-https"
+#         priority                   = 101
+#         direction                  = "Inbound"
+#         access                     = "Allow"
+#         protocol                   = "Tcp"
+#         source_port_range          = "*"
+#         destination_port_range     = "443"
+#         source_address_prefix      = "*"
+#         destination_address_prefix = "*"
+#   }
+#     security_rule {
+#         name                       = "allow-ssh"
+#         priority                   = 102
+#         direction                  = "Inbound"
+#         access                     = "Allow"
+#         protocol                   = "Tcp"
+#         source_port_range          = "*"
+#         destination_port_range     = "22"
+#         source_address_prefix      = "*"
+#         destination_address_prefix = "*"
+#   }
+}
+
+resource "azurerm_network_security_rule" "allowhttp" {
+        name                       = "allow-http"
+        resource_group_name = azurerm_network_security_group.NSG.location
+        network_security_group_name = azurerm_network_security_group.NSG.name
+        priority                   = 100
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "80"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+  
+}
+resource "azurerm_network_security_rule" "allowhttps" {
         name                       = "allow-https"
+        resource_group_name = azurerm_network_security_group.NSG.location
+        network_security_group_name = azurerm_network_security_group.NSG.name
         priority                   = 101
         direction                  = "Inbound"
         access                     = "Allow"
@@ -33,9 +73,13 @@ resource "azurerm_network_security_group" "NSG" {
         destination_port_range     = "443"
         source_address_prefix      = "*"
         destination_address_prefix = "*"
-  }
-    security_rule {
+  
+}
+
+resource "azurerm_network_security_rule" "name" {
         name                       = "allow-ssh"
+        resource_group_name = azurerm_network_security_group.NSG.location
+        network_security_group_name = azurerm_network_security_group.NSG.name
         priority                   = 102
         direction                  = "Inbound"
         access                     = "Allow"
@@ -44,8 +88,8 @@ resource "azurerm_network_security_group" "NSG" {
         destination_port_range     = "22"
         source_address_prefix      = "*"
         destination_address_prefix = "*"
-  }
 }
+
 
 resource "azurerm_subnet" "subnet" {
     name = "subnet"
