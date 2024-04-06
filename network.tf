@@ -97,19 +97,49 @@ resource "azurerm_lb_rule" "lbule" {
     frontend_ip_configuration_name = "Web_IP"
     backend_address_pool_ids = [azurerm_lb_backend_address_pool.backendpool.id]
 }
+# Looked at the pricing of azure firewall - I will secure via another method
+# resource "azurerm_firewall" "basic_firewall" {
+#     name = "basic_firewall"
+#     location = azurerm_resource_group.rg.location
+#     resource_group_name = azurerm_resource_group.rg.name
+#     sku_tier = "Basic"
+#     sku_name = "AZFW_VNet"
 
-resource "azurerm_firewall" "basic_firewall" {
-    name = "basic_firewall"
+#     ip_configuration {
+#       name = "fwconfig"
+#       subnet_id = azurerm_subnet.subnet.id
+#       public_ip_address_id = azurerm_public_ip.pubip.id
+
+
+#     }
+# }
+
+resource "azurerm_nat_gateway" "natg" {
+    name = "nat_gateway"
     location = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
-    sku_tier = "Basic"
-    sku_name = "AZFW_VNet"
+    sku_name = "Standard"
+    idle_timeout_in_minutes = "5"
+    zones = ["1"]
+  
+}
 
-    ip_configuration {
-      name = "fwconfig"
-      subnet_id = azurerm_subnet.subnet.id
-      public_ip_address_id = azurerm_public_ip.pubip.id
+resource "azurerm_public_ip" "natgip" {
+    name = "nat_gateway_ip"
+    location = azurerm_resource_group.rg.location
+    resource_group_name = azurerm_resource_group.rg.name
+    allocation_method = "Static"
+    sku = "Standard"
+    
+}
 
-
-    }
+resource "azurerm_nat_gateway_public_ip_association" "nat_pip_link" {
+    public_ip_address_id = azurerm_public_ip.pubip.id
+    nat_gateway_id = azurerm_nat_gateway.natgip.id
+  
+}
+resource "azurerm_subnet_nat_gateway_association" "subnet_nat_link" {
+        subnet_id = azurerm_subnet.subnet.id
+        nat_gateway_id = azurerm_nat_gateway.natg.id
+    
 }
