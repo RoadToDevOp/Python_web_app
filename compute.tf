@@ -1,26 +1,3 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "Hashicorp/azurerm"
-      version = "~>3.0"
-    }
-    random = {
-      source  = "Hashicorp/random"
-      version = "~>3.0"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-resource "azurerm_resource_group" "rg" {
-  name     = var.resource_group_name
-  location = var.resource_group_location
-}
-
-
 # resource "azurerm_virtual_machine" "webvm" {
 #     name = var.web_vm_name
 #     location = local.resource_group_location.rg
