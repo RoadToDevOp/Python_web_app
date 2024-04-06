@@ -1,5 +1,5 @@
 variable "resource_group_name" {
-  default = "Configure_resource_name"
+  default = "python_web_app"
 }
 
 variable "resource_group_location" {
