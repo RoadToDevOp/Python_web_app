@@ -13,8 +13,8 @@ resource "azurerm_network_security_group" "NSG" {
 
     security_rule {
         name = "allow http"
-        priority = 100
-        direction = "inbound"
+        priority = 10
+        direction = "Inbound"
         access = "Allow"
         protocol = "Tcp"
         source_port_range = "*"
