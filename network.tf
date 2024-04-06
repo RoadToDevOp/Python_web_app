@@ -130,6 +130,7 @@ resource "azurerm_public_ip" "natgip" {
     resource_group_name = azurerm_resource_group.rg.name
     allocation_method = "Static"
     sku = "Standard"
+    zones = ["1"]
 
 }
 
