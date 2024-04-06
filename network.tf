@@ -15,7 +15,7 @@ resource "azurerm_network_security_group" "NSG" {
         name = "allow http"
         priority = 100
         direction = "inbound"
-        access = "allow"
+        access = "Allow"
         protocol = "Tcp"
         source_port_range = "*"
         destination_port_range = "80"
@@ -75,7 +75,7 @@ resource "azurerm_lb" "Primary_lb" {
     resource_group_name = azurerm_resource_group.rg.name
     sku = "Standard"
     frontend_ip_configuration {
-      name = "Web_Ip"
+      name = "Web_IP"
       public_ip_address_id = azurerm_public_ip.pubip.id
     }
 
@@ -93,7 +93,7 @@ resource "azurerm_lb_rule" "lbule" {
     protocol = "Tcp"
     frontend_port = 80
     backend_port = 80
-    frontend_ip_configuration_name = [azurerm_lb.primary_lb.frontend_ip_configuration.name]
+    frontend_ip_configuration_name = "Web_IP"
     backend_address_pool_ids = [azurerm_lb_backend_address_pool.backendpool.id]
 
 
