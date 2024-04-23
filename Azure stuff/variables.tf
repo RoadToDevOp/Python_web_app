@@ -19,5 +19,16 @@ variable "vm_name" {
 }
 
 variable "CIDR" {
-  default = ["192.168.0.0/24"]
+  default = ["192.168.0.0/16"]
+}
+
+variable "admin_username" {
+  default = "Global_admin"
+  sensitive = true
+  
+}
+
+variable "admin_password" {
+  default = "Global_password23!"
+  sensitive = true
 }

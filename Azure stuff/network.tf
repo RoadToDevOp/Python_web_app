@@ -40,7 +40,7 @@ resource "azurerm_network_security_rule" "allowhttps" {
   
 }
 
-resource "azurerm_network_security_rule" "name" {
+resource "azurerm_network_security_rule" "allowssh" {
         name                       = "allow-ssh"
         resource_group_name = azurerm_network_security_group.NSG.resource_group_name
         network_security_group_name = azurerm_network_security_group.NSG.name
@@ -55,8 +55,8 @@ resource "azurerm_network_security_rule" "name" {
 }
 
 
-resource "azurerm_subnet" "subnet" {
-    name = "subnet"
+resource "azurerm_subnet" "Websubnet" {
+    name = "Websubnet"
     resource_group_name = azurerm_resource_group.rg.name
     virtual_network_name = azurerm_virtual_network.VN.name
     address_prefixes = ["192.168.0.0/26"]
@@ -64,7 +64,16 @@ resource "azurerm_subnet" "subnet" {
 
 resource "azurerm_subnet_network_security_group_association" "name" {
     network_security_group_id = azurerm_network_security_group.NSG.id
-    subnet_id = azurerm_subnet.subnet.id
+    subnet_id = azurerm_subnet.Websubnet.id
+}
+
+resource "azurerm_subnet" "Appsubnet" {
+    name = "Appsubnet"
+    resource_group_name = azurerm_resource_group.rg.name
+    virtual_network_name = azurerm_virtual_network.VN.name
+    address_prefixes = ["192.168.1.0/26"]
+
+  
 }
 
 resource "azurerm_public_ip" "pubip" {
@@ -78,8 +87,8 @@ resource "azurerm_public_ip" "pubip" {
 
 }
 
-resource "azurerm_lb" "Primary_lb" {
-    name = "primary_lb"
+resource "azurerm_lb" "Front_lb" {
+    name = "Front_lb"
     location = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
     sku = "Standard"
@@ -89,27 +98,67 @@ resource "azurerm_lb" "Primary_lb" {
     }
 
 }
-resource "azurerm_lb_backend_address_pool" "backendpool" {
-    name = "backendpool"
-    loadbalancer_id = azurerm_lb.Primary_lb.id
+resource "azurerm_lb_backend_address_pool" "Web_Pool" {
+    name = "Web_Pool"
+    loadbalancer_id = azurerm_lb.Front_lb.id
 
   
 }
-resource "azurerm_lb_probe" "lb_probe" {
+resource "azurerm_lb_probe" "Frontlb_probe" {
     name = "probe"
-    loadbalancer_id = azurerm_lb.Primary_lb.id
+    loadbalancer_id = azurerm_lb.Front_lb.id
     port = "80"
-    request_path =  "/"
+    request_path =  ""
   
 }
-resource "azurerm_lb_rule" "lbule" {
+resource "azurerm_lb_rule" "Front_lbrule" {
     name = "http"
-    loadbalancer_id = azurerm_lb.Primary_lb.id
+    loadbalancer_id = azurerm_lb.Front_lb.id
     protocol = "Tcp"
     frontend_port = 80
     backend_port = 80
     frontend_ip_configuration_name = "Web_IP"
-    backend_address_pool_ids = [azurerm_lb_backend_address_pool.backendpool.id]
+    backend_address_pool_ids = [azurerm_lb_backend_address_pool.Web_Pool.id]
+    probe_id = azurerm_lb_probe.Frontlb_probe.id
+}
+resource "azurerm_lb" "Back_lb" {
+    name = "Back_lb"
+    location = azurerm_resource_group.rg.location
+    resource_group_name = azurerm_resource_group.rg.name
+    sku = "Standard"
+    
+    frontend_ip_configuration {
+      name = "App_IP"
+      private_ip_address_allocation = "Dynamic"
+      subnet_id = azurerm_subnet.Websubnet.id
+    }
+    }
+
+resource "azurerm_lb_backend_address_pool" "App_Pool" {
+    name = "App_Pool"
+    loadbalancer_id = azurerm_lb.Back_lb.id
+
+
+  
+}
+resource "azurerm_lb_probe" "Back_lb_probe" {
+    name = "probe"
+    loadbalancer_id = azurerm_lb.Back_lb.id
+    port = "80"
+    request_path =  ""
+  
+}
+resource "azurerm_lb_rule" "Back_lbrule" {
+    name = "http"
+    loadbalancer_id = azurerm_lb.Back_lb.id
+    protocol = "Tcp"
+    frontend_port = 80
+    backend_port = 80
+    frontend_ip_configuration_name = "App_IP"
+    backend_address_pool_ids = [azurerm_lb_backend_address_pool.App_Pool.id]
+    probe_id = azurerm_lb_probe.Back_lb_probe.id
+    disable_outbound_snat = true
+
 }
 # Looked at the pricing of azure firewall - I will secure via another method
 # resource "azurerm_firewall" "basic_firewall" {
@@ -139,7 +188,7 @@ resource "azurerm_nat_gateway" "natg" {
 }
 
 resource "azurerm_public_ip" "natgip" {
-    name = "nat_gateway_ip"
+    name = "natgip"
     location = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
     allocation_method = "Static"
@@ -154,7 +203,51 @@ resource "azurerm_nat_gateway_public_ip_association" "nat_pip_link" {
   
 }
 resource "azurerm_subnet_nat_gateway_association" "subnet_nat_link" {
-        subnet_id = azurerm_subnet.subnet.id
+        subnet_id = azurerm_subnet.Websubnet.id
         nat_gateway_id = azurerm_nat_gateway.natg.id
     
 }
+
+resource "azurerm_network_interface" "WebNic" {
+    name = "WebNic"
+    location = azurerm_resource_group.rg.location
+    resource_group_name = azurerm_resource_group.rg.name
+    
+    ip_configuration {
+      name = "Webconfig"
+      subnet_id = azurerm_subnet.Websubnet.id
+      private_ip_address_allocation = "Dynamic"
+      primary = true
+
+    } 
+}
+
+resource "azurerm_network_interface" "AppNic" {
+    name = "AppNic"
+    location = azurerm_resource_group.rg.location
+    resource_group_name = azurerm_resource_group.rg.name
+
+    ip_configuration {
+      name = "Appconfig"
+      subnet_id = azurerm_subnet.Appsubnet.id
+      private_ip_address_allocation = "Dynamic"
+      primary = true
+
+    }
+  
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "WebPoolLink" {
+    network_interface_id = azurerm_network_interface.WebNic.id
+    ip_configuration_name = "Webconfig"
+    backend_address_pool_id = azurerm_lb_backend_address_pool.Web_Pool.id
+  
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "APpPoolLink" {
+    network_interface_id = azurerm_network_interface.AppNic.id
+    ip_configuration_name = "Appconfig"
+    backend_address_pool_id = azurerm_lb_backend_address_pool.App_Pool.id
+
+  
+}  
