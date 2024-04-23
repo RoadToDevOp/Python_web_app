@@ -23,12 +23,12 @@ variable "CIDR" {
 }
 
 variable "admin_username" {
-  default = "Global_admin"
+  default   = "Global_admin"
   sensitive = true
-  
+
 }
 
 variable "admin_password" {
-  default = "Global_password23!"
+  default   = "Global_password23!"
   sensitive = true
 }
